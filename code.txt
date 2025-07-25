@@ -1,0 +1,168 @@
+#Forest plot 
+if boostrap != 1:
+        ymax = (
+            np.max(df_plot["mean"])
+            + np.max(df_plot["std"])
+            + (np.max(df_plot["mean"]) - np.min(df_plot["mean"])) / 4
+        )
+        ymin = (
+            np.min(df_plot["mean"])
+            - np.max(df_plot["std"])
+            - (np.max(df_plot["mean"]) - np.min(df_plot["mean"])) / 4
+        )
+
+        ymax = math.ceil(ymax * 100) / 100
+        ymin = int(ymin * 100) / 100
+
+    ax.legend(loc="lower right", fontsize=5)
+    ax.legend(loc="lower right", fontsize=5)
+
+    df_test_auc = []
+    if savePath is not None:
+        plot_name_list.append(
+            save_fig(savePath, "valid_ROC_curve", "png", fig, str_time=str_time)
+        )
+        plot_name_dict_save["验证集ROC曲线"] = save_fig(
+            savePath, "valid_ROC_curve", picFormat, fig, str_time=str_time
+        )
+        plt.close(fig)
+
+        # 画训练集ROC
+        fig1 = plt.figure(figsize=(4, 4), dpi=dpi)
+        # 画对角线
+        plt.plot(
+            [0, 1],
+            [0, 1],
+            linestyle="--",
+            lw=1,
+            color="r",
+            alpha=0.8,
+        )
+        plt.grid(which="major", axis="both", linestyle="-.", alpha=0.3, color="grey")
+
+        for i in range(len(fpr_train_alls)):
+            df_test_auc.append(df_0.iloc[i + 1]["AUC"])
+            plt.plot(
+                fpr_train_alls[i],
+                tpr_train_alls[i],
+                lw=1.5,
+                alpha=0.9,
+                c=palette_dict[style][i],
+                label=name_dict[train_method_alls[i]]
+                + "(AUC = "
+                + df_0.iloc[i + 1]['AUC(95%CI)'][:df_0.iloc[i + 1]['AUC(95%CI)'].find('(')].strip()
+                + sdorci
+                + df_0.iloc[i + 1]['AUC(95%CI)'][df_0.iloc[i + 1]['AUC(95%CI)'].find('('):].strip()
+                + ")",
+            )
+
+        plt.xlim([-0.02, 1.02])
+        plt.ylim([-0.02, 1.02])
+        plt.xlabel("1-Specificity")
+        plt.ylabel("Sensitivity")
+        plt.title("ROC curve(Training)")
+        plt.legend(loc="lower right", fontsize=5)
+
+        plot_name_list.append(
+            save_fig(savePath, "ROC_Train_curve", "png", fig1, str_time=str_time)
+        )
+        plot_name_dict_save["训练集ROC曲线图"] = save_fig(
+            savePath, "ROC_Train_curve", picFormat, fig1, str_time=str_time
+        )
+        plt.close(fig1)
+        plot_name_list.reverse()  ###所有图片倒置
+
+        if boostrap != 1:
+            # df_plot.drop('mean', axis=1)
+            # df_plot.loc[:,'mean']=pd.Series(df_test_auc,name='mean')
+            plot_name_list += x5.forest_plot(
+                df_input=df_plot,
+                name="method",
+                value="mean",
+                err="std",
+                direct="horizontal",
+                fig_size=[len(methods) + 3, 9],
+                ylim=[ymin, ymax],
+                title="Forest Plot of Each Model AUC Score ",
+                path=savePath,
+                dpi=dpi,
+                picFormat=picFormat,
+            )
+            plot_name_dict_save["验证集多模型森林图"] = plot_name_list[len(plot_name_list) - 1]
+            plot_name_list.pop(len(plot_name_list) - 1)
+    plt.close()
+
+####################################
+    if savePath is not None:
+        plot_name_list.append(
+            save_fig(savePath, "valid_ROC_curve", "png", fig, str_time=str_time)
+        )
+        plot_name_dict_save["验证集ROC曲线"] = save_fig(
+            savePath, "valid_ROC_curve", picFormat, fig, str_time=str_time
+        )
+        plt.close(fig)
+
+        # 画训练集ROC
+        fig1 = plt.figure(figsize=(4, 4), dpi=dpi)
+        # 画对角线
+        plt.plot(
+            [0, 1],
+            [0, 1],
+            linestyle="--",
+            lw=1,
+            color="r",
+            alpha=0.8,
+        )
+        plt.grid(which="major", axis="both", linestyle="-.", alpha=0.3, color="grey")
+
+        for i in range(len(fpr_train_alls)):
+            df_test_auc.append(df_0.iloc[i + 1]["AUC"])
+            plt.plot(
+                fpr_train_alls[i],
+                tpr_train_alls[i],
+                lw=1.5,
+                alpha=0.9,
+                c=palette_dict[style][i],
+                label=name_dict[train_method_alls[i]]
+                + "(AUC = "
+                + df_0.iloc[i + 1]['AUC(95%CI)'][:df_0.iloc[i + 1]['AUC(95%CI)'].find('(')].strip()
+                + sdorci
+                + df_0.iloc[i + 1]['AUC(95%CI)'][df_0.iloc[i + 1]['AUC(95%CI)'].find('('):].strip()
+                + ")",
+            )
+
+        plt.xlim([-0.02, 1.02])
+        plt.ylim([-0.02, 1.02])
+        plt.xlabel("1-Specificity")
+        plt.ylabel("Sensitivity")
+        plt.title("ROC curve(Training)")
+        plt.legend(loc="lower right", fontsize=5)
+
+        plot_name_list.append(
+            save_fig(savePath, "ROC_Train_curve", "png", fig1, str_time=str_time)
+        )
+        plot_name_dict_save["训练集ROC曲线图"] = save_fig(
+            savePath, "ROC_Train_curve", picFormat, fig1, str_time=str_time
+        )
+        plt.close(fig1)
+        plot_name_list.reverse()  ###所有图片倒置
+
+        if boostrap != 1:
+            # df_plot.drop('mean', axis=1)
+            # df_plot.loc[:,'mean']=pd.Series(df_test_auc,name='mean')
+            plot_name_list += x5.forest_plot(
+                df_input=df_plot,
+                name="method",
+                value="mean",
+                err="std",
+                direct="horizontal",
+                fig_size=[len(methods) + 3, 9],
+                ylim=[ymin, ymax],
+                title="Forest Plot of Each Model AUC Score ",
+                path=savePath,
+                dpi=dpi,
+                picFormat=picFormat,
+            )
+            plot_name_dict_save["验证集多模型森林图"] = plot_name_list[len(plot_name_list) - 1]
+            plot_name_list.pop(len(plot_name_list) - 1)
+#######################################################################
